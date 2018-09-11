@@ -41,7 +41,7 @@ function toTimecode(time, fps) {
     t[c] = zeroFill(2, t[c]);
   }
   //.map(function(t) { return zeroFill(2, t); });
-  var f = parseInt(t[t.length-1]) * (1000 / 25);
+  var f = parseInt(t[t.length-1]) * (1000 / fps);
   return t.slice(0, -1).join(':') + ',' + zeroFill(3, f);
 }
 
