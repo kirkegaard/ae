@@ -1,5 +1,5 @@
 /**
- * Subtitle Importer v0.1
+ * Subtitle Importer v0.2
  *
  * by Christian Kirkegaard
  * lowpoly.dk
@@ -9,14 +9,24 @@
  **/
 
 var theComp = app.project.activeItem;
-var theFile = File.openDialog("Select a text file to open.", "SRT subtitles:*.srt");
-
 var font = 'Verdana';
 var fontSize = 32;
+var padding = 20;
 var paddingWidth = 200;
 var paddingHeight = 100;
 var compWidth = theComp.width;
 var compHeight = theComp.height;
+
+var theFile = File.openDialog("Select a text file to open.", "SRT subtitles:*.srt");
+
+var addBackground = confirm('Do you want a background for the subtitles?');
+var backgroundOpacity = 100;
+if (addBackground) {
+  backgroundOpacity = prompt('Set opacity [0-100]', 100);
+}
+
+
+app.beginUndoGroup('Import subtitles');
 
 if (theFile != null) {
   theFile.open('r', "TEXT", '????');
@@ -35,11 +45,33 @@ if (theFile != null) {
     // style.fontSize = fontSize;
     // text.setValue(style);
 
+    layer.anchorPoint.expression = 'boxTop = this.sourceRectAtTime().top; boxHeight = this.sourceRectAtTime().height; [value[0], boxTop + boxHeight/2 ];﻿';
+
     layer.inPoint = content[i].start;
     layer.outPoint = content[i].end;
     layer.transform.position.setValue([compWidth / 2, (compHeight - paddingHeight) + fontSize]);
+
+    if (addBackground) {
+      shapeLayer = theComp.layers.addShape();
+      shapeLayer.moveAfter(layer);
+      shapeLayer.position.expression = 'thisComp.layer("' + layer.name + '").transform.position';
+      shapeLayer.inPoint = content[i].start;
+      shapeLayer.outPoint = content[i].end;
+      shapeLayer.opacity.setValue(backgroundOpacity);
+
+      rect = shapeLayer.property("Contents").addProperty('ADBE Vector Shape - Rect');
+      rect.property('Size').expression = 't = thisComp.layer("' + layer.name + '").sourceRectAtTime(); p = ' + padding + '; w = t.width + (p*2); h = t.height + (p*2); [w, h]';
+
+      fill = shapeLayer.property("Contents").addProperty('ADBE Vector Graphic - Fill');
+      fill.property('Color').setValue([0,0,0]);
+    }
   }
 }
+
+app.endUndoGroup();
+
+
+// Helpers
 
 function toSeconds(time) {
   var t = time.split(':');
