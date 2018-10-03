@@ -1,5 +1,5 @@
 /**
- * Subtitle Exporter v0.1
+ * Subtitle Exporter v0.2
  *
  * by Christian Kirkegaard
  * lowpoly.dk
