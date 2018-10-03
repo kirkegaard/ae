@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Subtitle Exporter v0.1
  *
  * by Christian Kirkegaard
@@ -10,7 +10,9 @@
 
 var theComp = app.project.activeItem;
 var layers = theComp.selectedLayers;
-var theFile = File.saveDialog("Save the srt file.", "untitled.srt", "TEXT srt");
+var tmpFile = new File(theComp.name + '.srt');
+var theFile = tmpFile.saveDlg("Save the srt file.");
+theFile.encoding = "UTF-8";
 
 var fps = theComp.frameRate;
 
