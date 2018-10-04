@@ -1,42 +1,58 @@
 /**
- * Subtitle Exporter v0.2
+ * Subtitle Exporter v0.3
  *
  * by Christian Kirkegaard
  * lowpoly.dk
  *
  * Instructions:
- * Select all the Text Layers you want to export, run the script, and save the file as .srt
+ * Select all comps in the project view export, run the script, and save the files as .srt
  **/
 
-var theComp = app.project.activeItem;
-var layers = theComp.selectedLayers;
-var tmpFile = new File(theComp.name + '.srt');
-var theFile = tmpFile.saveDlg("Save the srt file.");
-theFile.encoding = "UTF-8";
+var comps = app.project.selection;
+for (var x = 0; x < comps.length; x++) {
 
-var fps = theComp.frameRate;
+  var theComp = comps[x];
+  var layers = theComp.layers;
+  var tmpFile = new File(theComp.name + '.srt');
+  var theFile = tmpFile.saveDlg("Save the srt file.");
+  theFile.encoding = "UTF-8";
 
-if (theFile != null) {
-  theFile.open("w","TEXT","????");
+  var fps = theComp.frameRate;
 
-  for (var i = 0; i < layers.length; i++) {
-    var layer = layers[i];
-    var inPoint = timeToCurrentFormat(layer.inPoint, fps);
-    var outPoint = timeToCurrentFormat(layer.outPoint, fps);
 
-    theFile.write(i+1);
-    theFile.write("\r\n");
-    theFile.write(toTimecode(inPoint, fps));
-    theFile.write(" --> ");
-    theFile.write(toTimecode(outPoint, fps));
-    theFile.write("\r\n");
-    theFile.write(layer.property("Source Text").value);
-    theFile.write("\r\n\n");
+  if (theFile != null) {
+    theFile.open("w","TEXT","????");
+
+    // Layer collection arrays start at 1?!
+    // Probably because it stores index as key
+    var item = 0;
+    for (var i = layers.length; i >= 1; i--) {
+      var layer = layers[i];
+      if (!layer.property('Source Text')) {
+        continue;
+      }
+
+      var inPoint = timeToCurrentFormat(layer.inPoint, fps);
+      var outPoint = timeToCurrentFormat(layer.outPoint, fps);
+
+      item = item+1;
+
+      theFile.write(item);
+      theFile.write("\r\n");
+      theFile.write(toTimecode(inPoint, fps));
+      theFile.write(" --> ");
+      theFile.write(toTimecode(outPoint, fps));
+      theFile.write("\r\n");
+      theFile.write(layer.property("Source Text").value);
+      theFile.write("\r\n\n");
+    }
+
+    theFile.close();
   }
-
-  theFile.close();
 }
 
+
+// Helpers
 function toTimecode(time, fps) {
   var t = time.split(':');
   for (c in t) {
