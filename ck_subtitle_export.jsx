@@ -1,5 +1,5 @@
 /**
- * Subtitle Exporter v0.3
+ * Subtitle Exporter v0.4
  *
  * by Christian Kirkegaard
  * lowpoly.dk
@@ -13,9 +13,10 @@ for (var x = 0; x < comps.length; x++) {
 
   var theComp = comps[x];
   var layers = theComp.layers;
-  var tmpFile = new File(theComp.name + '.srt');
+  var tmpFile = new File('~/Desktop/' + theComp.name + '.srt');
   var theFile = tmpFile.saveDlg("Save the srt file.");
   theFile.encoding = "UTF-8";
+  theFile.lineFeed = "Windows";
 
   var fps = theComp.frameRate;
 
@@ -37,14 +38,10 @@ for (var x = 0; x < comps.length; x++) {
 
       item = item+1;
 
-      theFile.write(item);
-      theFile.write("\r\n");
-      theFile.write(toTimecode(inPoint, fps));
-      theFile.write(" --> ");
-      theFile.write(toTimecode(outPoint, fps));
-      theFile.write("\r\n");
-      theFile.write(layer.property("Source Text").value);
-      theFile.write("\r\n\n");
+      theFile.writeln(item);
+      theFile.writeln(toTimecode(inPoint, fps) + " --> " + toTimecode(outPoint, fps));
+      theFile.writeln(layer.property("Source Text").value);
+      theFile.writeln('');
     }
 
     theFile.close();
