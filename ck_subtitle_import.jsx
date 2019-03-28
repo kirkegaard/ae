@@ -1,5 +1,5 @@
 /**
- * Subtitle Importer v0.2
+ * Subtitle Importer v0.3
  *
  * by Christian Kirkegaard
  * lowpoly.dk
@@ -45,7 +45,7 @@ if (theFile != null) {
     // style.fontSize = fontSize;
     // text.setValue(style);
 
-    layer.anchorPoint.expression = 'boxTop = this.sourceRectAtTime().top; boxHeight = this.sourceRectAtTime().height; [value[0], boxTop + boxHeight/2 ];﻿';
+    layer.anchorPoint.expression = 'boxTop = sourceRectAtTime().top; boxHeight = sourceRectAtTime().height; [value[0], boxTop + boxHeight];';
 
     layer.inPoint = content[i].start;
     layer.outPoint = content[i].end;
@@ -55,6 +55,7 @@ if (theFile != null) {
       shapeLayer = theComp.layers.addShape();
       shapeLayer.moveAfter(layer);
       shapeLayer.position.expression = 'thisComp.layer("' + layer.name + '").transform.position';
+      shapeLayer.anchorPoint.expression = 't = thisComp.layer("' + layer.name + '").sourceRectAtTime(); h = t.height/2; [0, h]';
       shapeLayer.inPoint = content[i].start;
       shapeLayer.outPoint = content[i].end;
       shapeLayer.opacity.setValue(backgroundOpacity);
